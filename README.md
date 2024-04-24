@@ -1,4 +1,5 @@
-Biblioteca Python
+Biblioteca Python.
+
 Este é um projeto de biblioteca desenvolvido em Python, que oferece funcionalidades básicas para gerenciar livros e usuários em uma biblioteca. O projeto inclui classes para livros, usuários e a biblioteca em si, além de métodos para cadastrar, consultar, emprestar e devolver livros, bem como para cadastrar e consultar usuários.
 
 Funcionalidades Principais:
