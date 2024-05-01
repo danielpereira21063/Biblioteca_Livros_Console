@@ -7,6 +7,11 @@ class Biblioteca:
         self.livros = {}
         self.livros_emprestados = {}
         self.usuarios = {}
+
+        # Carregar dados do CSV ao iniciar o programa
+        self.carregar_livros_csv("Database/livros.csv")
+        self.carregar_usuarios_csv("Database/usuarios.csv")
+        self.carregar_livros_emprestados_csv("Database/livros_emprestados.csv")
     
     def cadastrar_livro(self, titulo, autor, ano, copias):
         id_ultimo_livro_cadastrado = self.carregar_ultimo_id_livro_cadastrado()
@@ -21,7 +26,6 @@ class Biblioteca:
 
         # Após cadastrar o livro, salvar os livros em um arquivo CSV
         self.salvar_livros_csv("Database/livros.csv")
-
     
     def cadastrar_usuario(self, nome, contato):
         ultimo_id_usuario = self.carregar_ultimo_id_usuario_cadastrado()
@@ -66,28 +70,45 @@ class Biblioteca:
                 return 0 
             
     def obter_usuario_por_id(self, id_usuario):
-        if id_usuario in self.usuarios:
-            return self.usuarios[id_usuario]
-        else:
-            return None
+        usuario = None
+        id_usuario = int(id_usuario)
+        for i in self.usuarios:
+            if(self.usuarios[i].id_usuario == id_usuario):
+                usuario = self.usuarios[i]
+                break
+        return usuario
             
-    def emprestar_livro(self, titulo, id_usuario):
-        if titulo in self.livros and self.livros[titulo].copias > 0:
+    def emprestar_livro(self, livro_escolhido, id_usuario):
+        disponivel = False
+        idxLivro = -1
+        for idx in self.livros:
+            livro_encontrado = self.livros[idx]
+            if (livro_encontrado == livro_escolhido and livro_escolhido.copias > 0):
+                disponivel = True
+                idxLivro = idx
+                break
+
+
+        if disponivel:
             usuario = self.obter_usuario_por_id(id_usuario)
             if usuario is None:
-                print(f"Úsuario com id {id_usuario} não encontrado")
+                print(f"Usuário com ID {id_usuario} não encontrado.")
                 return
             
             # Subtrair uma cópia disponível
-            self.livros[titulo].copias -= 1
+            self.livros[idxLivro].copias -= 1
             # Adicionar livro à lista de livros emprestados pelo usuário
             if id_usuario not in self.livros_emprestados:
-                self.livros_emprestados[id_usuario] = [titulo]
+                self.livros_emprestados[id_usuario] = [livro_escolhido.titulo]
             else:
-                self.livros_emprestados[id_usuario].append(titulo)
-            print(f"Livro '{titulo}' emprestado ao usuário {usuario.nome}.")
+                self.livros_emprestados[id_usuario].append(livro_escolhido.titulo)
+            print(f"Livro '{livro_escolhido.titulo}' emprestado ao usuário {usuario.nome}.")
+            
+            # Salvar os livros emprestados em um arquivo CSV após emprestar um livro
+            self.salvar_livros_emprestados_csv("Database/livros_emprestados.csv")
         else:
             print("Livro não disponível para empréstimo.")
+
 
     
     def devolver_livro(self, titulo, id_usuario):
@@ -114,8 +135,10 @@ class Biblioteca:
             resultados = list(self.livros.values())
         
         if resultados:
+            print("=====================================================================================")
             for livro in resultados:
                 print(f"--> Título: {livro.titulo}, Autor: {livro.autor}, Ano: {livro.ano_publicacao}, Cópias: {livro.copias}\n")
+            print("=====================================================================================")
         else:
             print("Nenhum livro encontrado.")
 
@@ -133,22 +156,25 @@ class Biblioteca:
     
     def listar_detalhes_livros(self):
         if self.livros:
+            print("=====================================================================================")
             for titulo, livro in self.livros.items():
                 print(f"Título: {livro.titulo}")
                 print(f"Autor: {livro.autor}")
                 print(f"Ano de Publicação: {livro.ano_publicacao}")
                 print(f"Número de Cópias: {livro.copias}")
-                print()
+            print("=====================================================================================")
         else:
             print("Não há livros cadastrados.")
             
     def listar_detalhes_usuarios(self):
         if self.usuarios:
+            print("=====================================================================================")
             for id_usuario, usuario in self.usuarios.items():
                 print(f"Informações do usuário (ID {id_usuario}):")
                 print(f"Nome: {usuario.nome}")
                 print(f"Contato: {usuario.contato}")
                 print()
+            print("=====================================================================================")
         else:
             print("Não há usuários cadastrados.")
 
@@ -187,3 +213,65 @@ class Biblioteca:
                     'Nome': usuario.nome,
                     'Contato': usuario.contato
                 })
+
+    def carregar_livros_csv(self, nome_arquivo):
+            try:
+                with open(nome_arquivo, 'r', newline='') as arquivo_csv:
+                    leitor_csv = csv.DictReader(arquivo_csv)
+                    for linha in leitor_csv:
+                        id_livro = int(linha['ID'])
+                        titulo = linha['Título']
+                        autor = linha['Autor']
+                        ano = int(linha['Ano'])
+                        copias = int(linha['Cópias'])
+                        self.livros[id_livro] = Livro(id_livro, titulo, autor, ano, copias)
+            except FileNotFoundError:
+                print(f"Arquivo '{nome_arquivo}' não encontrado. Nenhum livro carregado.")
+
+    def carregar_usuarios_csv(self, nome_arquivo):
+        try:
+            with open(nome_arquivo, 'r', newline='') as arquivo_csv:
+                leitor_csv = csv.DictReader(arquivo_csv)
+                for linha in leitor_csv:
+                    id_usuario = int(linha['ID'])
+                    nome = linha['Nome']
+                    contato = linha['Contato']
+                    self.usuarios[id_usuario] = Usuario(nome, id_usuario, contato)
+        except FileNotFoundError:
+            print(f"Arquivo '{nome_arquivo}' não encontrado. Nenhum usuário carregado.")
+
+    def salvar_livros_emprestados_csv(self, nome_arquivo):
+        # Abrir o arquivo CSV para adição
+        with open(nome_arquivo, 'w', newline='') as arquivo_csv:
+            # Definir os nomes das colunas
+            colunas = ['ID_Usuario', 'titulo']
+            # Criar o escritor CSV
+            escritor_csv = csv.DictWriter(arquivo_csv, fieldnames=colunas)
+            # Escrever o cabeçalho
+            escritor_csv.writeheader()
+            # Escrever os detalhes de cada usuário e os livros emprestados
+            for id_usuario, livros_emprestados in self.livros_emprestados.items():
+                for id_livro in livros_emprestados:
+                    escritor_csv.writerow({
+                        'ID_Usuario': id_usuario,
+                        'titulo': id_livro
+                    })
+
+
+
+    def carregar_livros_emprestados_csv(self, nome_arquivo):
+        try:
+            with open(nome_arquivo, 'r', newline='') as arquivo_csv:
+                leitor_csv = csv.DictReader(arquivo_csv)
+                for linha in leitor_csv:
+                    id_usuario = int(linha['ID_Usuario'])
+                    id_livro = linha['titulo']
+                    # Adiciona o livro emprestado ao usuário correspondente
+                    if id_usuario not in self.livros_emprestados:
+                        self.livros_emprestados[id_usuario] = [id_livro]
+                    else:
+                        self.livros_emprestados[id_usuario].append(id_livro)
+        except FileNotFoundError:
+            print(f"Arquivo '{nome_arquivo}' não encontrado. Nenhum livro emprestado carregado.")
+
+

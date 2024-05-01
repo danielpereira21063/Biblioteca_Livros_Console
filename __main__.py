@@ -39,10 +39,13 @@ def abrirMenu():
 
             biblioteca.cadastrar_livro(titulo, autor, ano, copias)
         elif opcao == '2':
-            busca = input("Informe o título, autor ou ano para consulta: ")
+            busca = input("Informe o título, autor ou ano para consulta (enter para consulta completa): ")
             biblioteca.consultar_livros(busca)
         elif opcao == '3':
             livros = biblioteca.get_lista_livros_emprestados()
+
+            #LISTAR AQYUUQYQUQU
+
             if not livros:
                 print("Não há livros emprestados.")
             else:
@@ -70,11 +73,14 @@ def abrirMenu():
             if not livros_disponiveis:
                 print("Não há livros disponíveis para empréstimo.")
             else:
-                print("Lista de Livros Disponíveis para Empréstimo:")
+                print("Lista de Livros Disponíveis para Empréstimo: \n")
                 for i, livro in enumerate(livros_disponiveis):
                     print(f"{i + 1}. Título: {livro.titulo}, Autor: {livro.autor}, Ano: {livro.ano_publicacao}, Cópias Disponíveis: {livro.copias}")
 
-            opcao = input("Digite o número do livro que deseja emprestar ('0' para sair): ")
+            opcao = input("\nDigite o número do livro que deseja emprestar ('0' para sair): ")
+
+            Biblioteca.listar_detalhes_usuarios(self=biblioteca)
+
             if opcao.isdigit():
                 opcao = int(opcao)
                 if opcao == 0:
@@ -82,7 +88,7 @@ def abrirMenu():
                 elif opcao > 0 and opcao <= len(livros_disponiveis):
                     livro_escolhido = livros_disponiveis[opcao - 1]
                     id_usuario = input("ID do Usuário que está Emprestando: ")
-                    biblioteca.emprestar_livro(livro_escolhido.titulo, id_usuario)
+                    biblioteca.emprestar_livro(livro_escolhido, id_usuario)
                 else:
                     print("Escolha inválida. Por favor, escolha um número válido.")
             else:
@@ -93,7 +99,7 @@ def abrirMenu():
             contato = input("Contato: ")
             biblioteca.cadastrar_usuario(nome, contato)
         elif opcao == '6':
-            id_usuario = input("ID do Usuário para Consulta (vazio caso queira listar todos): ")
+            id_usuario = input("ID do Usuário para Consulta (vazio caso queira listar todos): \n")
             biblioteca.consultar_usuarios(id_usuario)
         elif opcao == '7':
             biblioteca.gerar_relatorios()
