@@ -8,6 +8,9 @@ def abrirMenu():
     biblioteca = Biblioteca()
     while True:
         print("\nBem-vindo à Biblioteca")
+        print("===============================")
+        print("            MENU               ")
+        print("===============================")
         print("1 - Cadastrar Livros")
         print("2 - Consultar Livros")
         print("3 - Devolução de Livro")
@@ -16,6 +19,7 @@ def abrirMenu():
         print("6 - Consultar Usuários")
         print("7 - Relatórios")
         print("0 - Sair")
+        print("===============================")
 
         opcao = input("Escolha uma opção: ")
 
@@ -42,26 +46,25 @@ def abrirMenu():
             busca = input("Informe o título, autor ou ano para consulta (enter para consulta completa): ")
             biblioteca.consultar_livros(busca)
         elif opcao == '3':
-            livros = biblioteca.get_lista_livros_emprestados()
-
+            livros_emprestados = biblioteca.get_lista_livros_emprestados()
             #LISTAR AQYUUQYQUQU
 
-            if not livros:
+            if not livros_emprestados:
                 print("Não há livros emprestados.")
             else:
-                print("Lista de Livros:")
-                for i, livro in enumerate(livros):
-                    print(f"{i + 1}. Título: {livro.titulo}, Autor: {livro.autor}, Ano: {livro.ano_publicacao}, Cópias: {livro.copias}")
+                print("Lista de Livros emprestados: ")
+                for i, livro in enumerate(livros_emprestados):
+                    print(f"{i + 1}. Usuário: {livro['nome_usuario']} Título: {livro['titulo']}, Autor: {livro['autor']}, Ano: {livro['ano_publicacao']}, Cópias: {livro['copias']}")
 
                 opcao = input("Digite o número do livro que deseja devolver (ou digite '0' para sair): ")
                 if opcao.isdigit():
                     opcao = int(opcao)
                     if opcao == 0:
                         print("Operação cancelada.")
-                    elif opcao > 0 and opcao <= len(livros):
-                        livro = livros[opcao - 1]
-                        print(f"Você escolheu devolver o livro '{livro.titulo}'.")
-                        biblioteca.devolver_livro(livro.titulo)
+                    elif opcao > 0 and opcao <= len(livros_emprestados):
+                        livro = livros_emprestados[opcao - 1]
+                        print(f"Você escolheu devolver o livro '{livro['titulo']}'.")
+                        biblioteca.devolver_livro(livro['titulo'], livro['idUsuario'])
                     else:
                         print("Escolha inválida. Por favor, escolha um número válido.")
                 else:

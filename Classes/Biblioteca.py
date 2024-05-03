@@ -1,7 +1,6 @@
 import csv
 from Classes.Livro import Livro
 from Classes.Usuario import Usuario
-
 class Biblioteca:
     def __init__(self):
         self.livros = {}
@@ -110,13 +109,31 @@ class Biblioteca:
             print("Livro não disponível para empréstimo.")
 
 
+    def listar_detalhes_livros_emprestados(self):
+        livros_emprestados = self.get_lista_livros_emprestados()
+        if livros_emprestados:
+            print("=====================================================================================")
+            for livro_emprestado in livros_emprestados:
+                print(f"ID Usuário: {livro_emprestado['idUsuario']}, Nome do Usuário: {livro_emprestado['nome_usuario']}, Título: {livro_emprestado['titulo']}, Autor: {livro_emprestado['autor']}, Ano de Publicação: {livro_emprestado['ano_publicacao']}, Cópias: {livro_emprestado['copias']}")
+            print("=====================================================================================")
+        else:
+            print("Nenhum livro emprestado no momento.")
+
     
     def devolver_livro(self, titulo, id_usuario):
         if id_usuario in self.livros_emprestados and titulo in self.livros_emprestados[id_usuario]:
+            idxLivro = -1
+
+            for i in self.livros:
+                if(self.livros[i].titulo == titulo):
+                  idxLivro = i 
+                  break
             # Incrementar uma cópia disponível
-            self.livros[titulo].copias += 1
+            self.livros[idxLivro].copias += 1
             # Remover o livro da lista de livros emprestados pelo usuário
             self.livros_emprestados[id_usuario].remove(titulo)
+
+            self.salvar_livros_emprestados_csv('Database/livros_emprestados.csv')
             print(f"Livro '{titulo}' devolvido com sucesso.")
         else:
             print(f"O usuário {id_usuario} não tem este livro emprestado.")
@@ -145,14 +162,42 @@ class Biblioteca:
     def get_lista_livros(self):
         return list(self.livros.values())
     
+    def obter_livro_por_titulo(self, titulo):
+        for livro in self.livros.values():
+            if livro.titulo == titulo:
+                return livro
+        return None
+
     def get_lista_livros_emprestados(self):
-        return list(self.livros_emprestados.values())
+        lista_emprestimos = []
+        
+        for id_usuario, livros_emprestados in self.livros_emprestados.items():
+            usuario = self.obter_usuario_por_id(id_usuario)
+            if usuario:
+                for titulo in livros_emprestados:
+                    livro = self.obter_livro_por_titulo(titulo)
+                    if livro:
+                        lista_emprestimos.append({
+                            'idUsuario': id_usuario,
+                            'nome_usuario': usuario.nome,
+                            'titulo': titulo,
+                            'autor': livro.autor,
+                            'ano_publicacao': livro.ano_publicacao,
+                            'copias': livro.copias
+                        })
+
+        return lista_emprestimos
     
     def gerar_relatorios(self):
         print("Relatório de Livros:")
         self.listar_detalhes_livros()
+
         print("\nRelatório de Usuários:")
         self.listar_detalhes_usuarios()
+
+        print("\nRelatório de Livros Emprestados:")
+        self.listar_detalhes_livros_emprestados()
+        
     
     def listar_detalhes_livros(self):
         if self.livros:
