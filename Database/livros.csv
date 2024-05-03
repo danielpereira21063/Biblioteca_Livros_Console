@@ -1,8 +1,12 @@
-ID,T�tulo,Autor,Ano,C�pias
-1,aaa,2010,2010,1019
-2,AHAHA,Daniel 2,1010,100
-3,Livro de teste,Daniel,2010,100
-4,Deu a louca no mundo,Joana,2020,30
-5,1,DA,2010,100
-6,Daniel e Daniel,2020,2010,100
-7,3,4,32323,100
+ID,Titulo,Autor,Ano,Copias
+1,Dom Casmurro,Machado de Assis,1899,50
+2,Memórias Póstumas de Brás Cubas,Machado de Assis,1881,30
+3,Grande Sertão: Veredas,João Guimarães Rosa,1956,40
+4,O Alienista,Machado de Assis,1882,20
+5,Sagarana,João Guimarães Rosa,1946,35
+6,Vidas Secas,Graciliano Ramos,1938,25
+7,Capitães da Areia,Jorge Amado,1937,45
+8,Quincas Borba,Machado de Assis,1891,28
+9,Iracema,José de Alencar,1865,38
+10,Til,José de Alencar,1872,32
+11,Daniel e Seus amigos,Daniel,2010,20
