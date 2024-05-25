@@ -244,7 +244,7 @@ class Biblioteca:
                 print(f"Autor: {livro.autor}")
                 print(f"Ano de Publicação: {livro.ano_publicacao}")
                 print(f"Número de Cópias: {livro.copias}")
-            print("=====================================================================================")
+                print("\n")
         else:
             print("Não há livros cadastrados.")
             
@@ -255,8 +255,7 @@ class Biblioteca:
                 print(f"Informações do usuário (ID {id_usuario}):")
                 print(f"Nome: {usuario.nome}")
                 print(f"Contato: {usuario.contato}")
-                print()
-            print("=====================================================================================")
+                print("\n")
         else:
             print("Não há usuários cadastrados.")
 

@@ -117,6 +117,8 @@ def emprestar_livro(biblioteca):
             print("Operação cancelada.")
         elif opcao > 0 and opcao <= len(livros_disponiveis):
             livro_escolhido = livros_disponiveis[opcao - 1]
+
+            biblioteca.consultar_usuarios()
             id_usuario = input("ID do Usuário que está Emprestando: ")
             biblioteca.emprestar_livro(livro_escolhido, id_usuario)
         else:
